@@ -4,6 +4,105 @@
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-23
+
+上游 Pojun 全功能移植 + 性能优化。数据库迁移幂等，老库启动自动升级，业务数据零丢失。
+
+### 新增
+
+#### 漏洞情报库（vulnintel）
+
+- 内置 NVD CVE / CISA KEV / GitHub Advisory / PoC 聚合扫描，定期自动同步（延迟 90 秒起跑，每 6 小时一轮）
+- KEV 在野利用标记排序、CPE 结构化版本区间判定、GHSA 补充区间（NVD 对新披露 CVE 常把版本位写成 `*`）
+- nuclei 模板树自动维护，`scan_with_nuclei` 按 CVE 精确投递模板
+- 六个 agent 工具：`search_vulns` / `get_vuln` / `search_recent_critical` / `get_poc` / `scan_with_nuclei` / `net_context`
+- 实测：CVE 入库 28,731 条，nuclei 模板 14,382 个
+
+#### Word(.docx) 报告导出
+
+- 公文格式（GB/T 9704）：仿宋_GB2312 / 楷体_GB2312 / 方正小标宋_GBK 三字体，TOC 自刷、按漏洞类分组、复测记录、流量证据、附录资产清单
+- 任务总报告与单漏洞报告两条导出路由；图片按版心等比缩放嵌入
+- 手写 OOXML 实现，零第三方文档库依赖
+- **字体改为运行期从 `data/fonts/` 加载**（上游是 go:embed），二进制因此从 50MB 降到 44MB
+
+#### 原生 HTTP 执行器与会话复用
+
+- `http_request` / `session_login`：Go 侧直接发请求，一次调用拿结构化结果
+- 任务级 cookie jar（Netscape 格式，与 curl 互通），「登录 → 越权 → 回读」跨意图复用
+- 出口与 Bash 同源，走同一个记录代理，流量照常进流量查看器
+
+#### 任务级后台作业与脚本
+
+- `job_start` / `job_status` / `job_output` / `job_stop`：长扫描跨意图存活
+- `save_script` / `run_script`：任务级共享脚本目录，登录脚本 / PoC 跨意图复用
+- 收尾时自动清理任务后台作业（授权窗口结束不再打目标）
+
+#### 攻击链续跳与危害验证
+
+- `report_finding` 成功后按漏洞维度自动派继任意图（注入→导数据、RCE→收凭据、越权→回读…）
+- 全量危害验证协议作为代码内置硬尾巴注入 worker/planner/mainagent：影响阶梯 L0–L4、数据量硬要求、权限矩阵、写测试铁律、不脱敏
+- 意图维度去重（11 个维度 + 中英文别名）、派发节奏背压、`retire_intent` 退役失效意图（每轮上限 6 条）
+
+#### 机器验证与证据
+
+- `validate_finding`：按漏洞类别跑程序化验证探针，输出机验标记 `validate:<token>:pass`
+- `evidence_check`：13 项证据完备性检查 + src_ready 判定
+- `save_evidence` / `list_artifacts`：证据附件（截图/数据样本/日志）登记、打包导出、文档预览
+
+#### 红队子系统
+
+- **代理池**：per-request 轮换、连败熔断、sticky_host 策略、订阅拉取、健康检查
+- **mihomo 内核管理**：订阅 YAML → mixed-port → 代理池入口
+- **严格出口**：池全部熔断时返回哨兵地址（必然失败），避免直连泄露真实 IP
+- **SSH 跳板出口**：本地 SOCKS5 → 跳板机出网，出口直接入代理池
+- **回连接收器**：接住反弹 shell / OOB 回连并留证（绑定 1024+ 端口，无需特权）
+- **凭据保险库**：XChaCha20-Poly1305 加密存储，带访问审计流水
+- **宿主环境体检与一键装工具**：经特权助手 `artex-hostd`（不经主进程提权）
+
+#### 前端
+
+- 新增 6 个页面：漏洞情报、代理池、Clash 节点管理、SSH 跳板、宿主环境、监听器/C2
+- 任务详情新增诊断包导出、成本估算、任务级登录凭据自检
+- 路由级错误边界（页面崩了能看到原因而不是白屏）
+
+#### 方法论技能
+
+- 方法论库从 3 个扩充到 **23 个**：攻击面侦察、Web 攻击手法、主动漏洞挖掘、0day 研究、源码审计、SRC 挖掘知识库、APK 逆向、二进制逆向、云攻击、AD 域攻防、无线 IoT、智能合约、AI 应用攻击、后渗透、OPSEC、交付验收三件套等
+- SKILL.md 支持 `tags` 标签（CWE / ATT&CK / 类别），便于按漏洞类检索方法论
+
+### 变更
+
+- 模块目录从 12 个增至 25 个（新增 vulnintel / vault / egress / mihomo / proxyprobe / hosttools / hostd / llmpresets / docpreview / llmguard / listener / mcp-servers / docker）
+- 数据库表从 49 张增至 61 张；新增幂等增量列（assets.simhash、tasks.autopilot 等）
+- 二进制从单入口拆为三个：`artex`（主服务）/ `artex-hostd`（特权助手）/ `artex-maint`（维护工具）
+- 宿主助手命名统一：socket 路径 `/run/artex/hostd.sock`，二进制 `artex-hostd`
+- 环境变量 `POJUN_INSTALL_PROXY` → `ARTEX_INSTALL_PROXY`
+
+### 修复
+
+- **`server.New` 启动死锁**：`startAutopilotLoop` 内部是永久 tick 循环，被同步调用导致 HTTP 服务永不启动（进程活着、引擎在跑、但端口不监听）。改为异步启动
+- **登录用户名写死为 `POJUN`**：前端 `api.login("POJUN")` 与后端只接受 `ARTEX` 不匹配，浏览器登录失败（curl 直连正常，掩盖了问题）
+- **`tasks.autopilot` 列类型错**：建成 TEXT 而 SQL 里当布尔用，导致 `argument of AND must be type boolean`；`autopilot_extensions` 同理（JSONB → INTEGER）。已加幂等类型纠偏
+- **漏建 5 张表 / 12 个列**：`findings` 缺 fingerprint 等 5 列（诊断包 findings.json 返回 null）、`vuln_cves.cwes` 缺失（NVD 同步全挂）、`vuln_cpe_products` 版本区间列、`vuln_sync_state.page_cursor`、`task_artifacts` 表
+- **`GET /api/version` 漏注册**（前端更新卡片轮询 404）
+- **mihomo 管理器未初始化**（代理池 Clash 接口全部 503）
+
+### 性能
+
+多任务并发下的页面卡顿优化，全部经无头浏览器实测：
+
+- **任务详情页 30 秒传输：5.09 MB → 1.08 MB（-79%）**
+- **Dashboard 30 秒请求数：76 → 40（-47%）**
+- `/api/stats`：0.79s → 0.008s（**-99%**）——用 SQL 聚合替代 `ListByKind(KindIntent, 100000)` 全表搬行
+- `/api/exploration/intents`：578KB → 66KB（**-88%**）——列表默认只回摘要，完整正文按需取
+- `/api/tasks/{id}/intent-assets`：426KB → 158KB（-63%）——支持 `?limit=N` 收窄
+- `/api/intercept/task/{id}`：轮询从 167KB → ~0.1KB（**-99.9%**）——新增 `?counts=1` 只回状态计数
+- 前端轮询全面降频（审批徽标 5s→10s、概览快组 3s→10s、chat/status 2s→5s、intent-assets 5s→30s 等），并统一加 `document.hidden` 判断（后台标签页不请求）
+
+### 文档
+
+- 新增 `docs/ARTEX全量移植说明.md`：模块清单、数据库变更、迁移实测、性能优化前后对比、回滚步骤
+
 ## [0.3.15] - 2026-10-07
 
 ### 拦截

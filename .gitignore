@@ -24,8 +24,9 @@ web/next-env.d.ts
 *.swp
 *.swo
 
-# docs
-/docs/
+# docs：技术文档随仓库走（docs/ 里有架构与改造说明）；
+# 私密/临时的推演记录用 *.private.md 排除即可。
+/docs/*.private.md
 
 # os
 .DS_Store

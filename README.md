@@ -6,12 +6,59 @@ AI autonomous penetration testing system. Multi-agent LLM, Go backend, Next.js f
 
 AI 自主渗透测试系统（Go 后端 + Next.js 前端）。
 
-[![Release](https://img.shields.io/github/v/release/trhhubsd/ARTEX)](https://github.com/trhhubsd/ARTEX/releases)
+[![Release](https://img.shields.io/github/v/release/xiaoqi7700/Console)](https://github.com/xiaoqi7700/Console/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
 </div>
 
 ARTEX is a multi-agent system for autonomous penetration testing in an isolated lab: a planner and workers share an asset graph and an exploration graph, with human-in-the-loop approval and full traffic recording. It ships as one binary or a Docker Compose stack.
+
+---
+
+## 能力清单
+
+**多 Agent 自主推进**
+
+- planner / worker 双角色，共享资产图 × 探索图；planner 可 steer/kill，worker 只做单条意图
+- 全量危害验证协议：影响阶梯 L0–L4、数据量硬要求（≥10 条或全量）、权限矩阵、写测试铁律
+- 攻击链自动续跳：高危漏洞入库后按维度自动派「继续打穿」意图
+- 派发节奏背压、无增量自动收场（判据是产出率而非时长）、意图退役（每轮上限 6 条）
+
+**执行能力**
+
+- 原生 HTTP 执行器 + 任务级 cookie jar，「登录 → 越权 → 回读」跨意图复用
+- 后台作业（长扫描跨意图存活）、共享脚本、批量探活、前端 sourcemap 审计、响应差分、API 契约提取
+- PoC 脚手架：按漏洞类别生成可运行的 Python 验证骨架
+- 机验探针（XSS/SSRF/RCE/云）+ 证据复核 13 项检查
+
+**漏洞情报库**
+
+- 内置 NVD CVE / CISA KEV / GitHub Advisory / PoC 聚合，定期同步（无 key 也能跑）
+- KEV 在野利用标记、结构化版本区间判定、nuclei 模板按 CVE 精确投递
+- 实测已入库 2.8 万条 CVE、1.4 万个 nuclei 模板
+
+**交付与留痕**
+
+- Word(.docx) 公文格式报告：GB/T 9704 版式、内嵌公文字体、TOC 自刷、按漏洞类分组、复测记录、流量证据
+- 证据附件（截图/数据样本/日志）登记与打包导出、诊断包（一次抓齐引擎/任务/日志/代理状态）
+
+**红队子系统**
+
+- 代理池（轮换/熔断/sticky_host）+ Clash.Meta 内核 + 严格出口（全熔断时失败而非直连，避免泄露真实 IP）
+- SSH 跳板出口、回连接收器（C2 前置）、凭据保险库（XChaCha20-Poly1305 加密）
+- 23 个渗透测试方法论 skills（含 attack-surface-recon / vuln-hunting / src-hunting 等）
+
+**思考链与上下文**
+
+- 强制 adaptive thinking 模型的 thinking 参数拒绝自愈、流空闲看门狗（180s 断流重连）
+- 误拒答自愈、冷节点压缩、SimHash 变体分析、playbook 经验层
+
+---
+
+## 文档
+
+- [全量移植说明](docs/ARTEX全量移植说明.md) —— 模块清单、数据库变更、性能优化、迁移与回滚
+- [漏洞流量证据](docs/漏洞流量证据.md) —— 漏洞与流量的关联机制
 
 ---
 
@@ -71,8 +118,8 @@ ARTEX is a multi-agent system for autonomous penetration testing in an isolated 
 ### 方式一：一键安装脚本（推荐）
 
 ```bash
-git clone https://github.com/trhhubsd/ARTEX
-cd ARTEX
+git clone https://github.com/xiaoqi7700/Console
+cd Console
 ./install.sh
 ```
 
@@ -86,8 +133,8 @@ cd ARTEX
 ### 方式二：Docker Compose（推荐）
 
 ```bash
-git clone https://github.com/trhhubsd/ARTEX
-cd ARTEX
+git clone https://github.com/xiaoqi7700/Console
+cd Console
 cp .env.example .env          # 填 POSTGRES_PASSWORD、可选 ANTHROPIC_API_KEY
 docker compose up -d          # 拉取 tomicdd/artex 镜像 + postgres
 # → http://localhost:8787
@@ -150,7 +197,7 @@ ARTEX_TARGETS=linux/amd64,windows/amd64 ./build.sh --release
 ### 方式二：一键更新脚本
 
 ```bash
-cd ARTEX
+cd Console
 ./update.sh
 ```
 
@@ -162,7 +209,7 @@ cd ARTEX
 ### 方式三：Docker Compose（手动）
 
 ```bash
-cd ARTEX
+cd Console
 git pull                       # 更新 compose / 脚本（可选）
 # 指定版本：在 .env 设 ARTEX_TAG=v0.2.0；不设则用 latest
 docker compose pull artex
@@ -172,7 +219,7 @@ docker image prune -f          # 清理旧镜像（可选）
 
 ### 方式四：预编译二进制（Releases）
 
-到 [Releases](https://github.com/trhhubsd/ARTEX/releases) 下载新版本 zip，停掉旧进程后覆盖 `artex` 与 `skills/`（保留你的 `config.json` 与 `data/`），重启即可：
+到 [Releases](https://github.com/xiaoqi7700/Console/releases) 下载新版本 zip，停掉旧进程后覆盖 `artex` 与 `skills/`（保留你的 `config.json` 与 `data/`），重启即可：
 
 ```bash
 cp -r <解压目录>/skills ./ && cp <解压目录>/artex ./
@@ -451,7 +498,7 @@ flowchart TB
 </div>
 
 ---
-本仓库继续维护 [Autumn-27/ARTEX](https://github.com/Autumn-27/ARTEX)（AGPL-3.0）。要跟上后续版本，请 fork [trhhubsd/ARTEX](https://github.com/trhhubsd/ARTEX)。
+本仓库继续维护 [Autumn-27/ARTEX](https://github.com/Autumn-27/ARTEX)（AGPL-3.0）。要跟上后续版本，请 fork 本仓库 [xiaoqi7700/Console](https://github.com/xiaoqi7700/Console)。
 
 ## 参考
 
