@@ -1,0 +1,277 @@
+{
+  "updated": "2026-11-21",
+  "source": "models.dev 快照 + OpenCode Zen 官方 /v1/models 实测（构建期内嵌；运行时 7 天 TTL 在线刷新，失败静默沿用本文件）",
+  "models": {
+    "gpt-5.2": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "gpt-5": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "gpt-5-mini": {
+      "context_k": 400,
+      "max_output": 128,
+      "reasoning": true
+    },
+    "gpt-4.1": {
+      "context_k": 400,
+      "max_output": 32,
+      "reasoning": false
+    },
+    "gpt-4o": {
+      "context_k": 128,
+      "max_output": 16,
+      "reasoning": false
+    },
+    "claude-opus-4-8": {
+      "context_k": 200,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "claude-opus-4-5": {
+      "context_k": 200,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "claude-sonnet-4-5": {
+      "context_k": 200,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "claude-haiku-4-5": {
+      "context_k": 200,
+      "max_output": 0,
+      "reasoning": true
+    },
+    "deepseek-chat": {
+      "context_k": 128,
+      "max_output": 8,
+      "reasoning": false
+    },
+    "deepseek-reasoner": {
+      "context_k": 128,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "deepseek-v4.1-flash": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 384
+    },
+    "deepseek-v4.1": {
+      "context_k": 256,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "deepseek-v4": {
+      "context_k": 1024,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "glm-5": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "glm-4.7-flash": {
+      "context_k": 128,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "glm-4.6": {
+      "context_k": 200,
+      "max_output": 128,
+      "reasoning": true
+    },
+    "qwen3-max": {
+      "context_k": 262,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "qwen-max": {
+      "context_k": 131,
+      "max_output": 32,
+      "reasoning": false
+    },
+    "qwen-plus": {
+      "context_k": 131,
+      "max_output": 16,
+      "reasoning": true
+    },
+    "kimi-k3": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "kimi-k2": {
+      "context_k": 262,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "moonshot-v1-128k": {
+      "context_k": 131,
+      "max_output": 16,
+      "reasoning": false
+    },
+    "gemini-3-pro": {
+      "context_k": 1024,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "gemini-2.5-pro": {
+      "context_k": 1024,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "gemini-2.5-flash": {
+      "context_k": 1024,
+      "max_output": 64,
+      "reasoning": true
+    },
+    "deepseek-ai/DeepSeek-V3.2": {
+      "context_k": 128,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "deepseek-ai/DeepSeek-R1": {
+      "context_k": 128,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "Qwen/Qwen3-235B-A22B": {
+      "context_k": 262,
+      "max_output": 32,
+      "reasoning": true
+    },
+    "LongCat-2.5": {
+      "context_k": 128,
+      "max_output": 32,
+      "reasoning": false
+    },
+    "llama-3.3-70b-versatile": {
+      "context_k": 131,
+      "max_output": 32,
+      "reasoning": false
+    },
+    "deepseek-v4-pro": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 384
+    },
+    "deepseek-v4-flash": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "glm-5.3": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "glm-5.3-flash": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "glm-5.2": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "glm-5.1": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "kimi-k2.7-code": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "kimi-k2.6": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "kimi-k2.5": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "minimax-m3": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "minimax-m2.7": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "qwen3.8-max": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "qwen3.7-max": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "big-pickle": {
+      "context_k": 200,
+      "reasoning": true,
+      "max_output": 32
+    },
+    "exo-free": {
+      "context_k": 200,
+      "reasoning": true
+    },
+    "longcat-2.5-preview-free": {
+      "context_k": 200,
+      "reasoning": true
+    },
+    "step-5-preview-free": {
+      "context_k": 200,
+      "reasoning": true
+    },
+    "gpt-5.4": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "gpt-5.5": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "gpt-6-sol": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "gpt-6.1-sol": {
+      "context_k": 400,
+      "reasoning": true,
+      "max_output": 128
+    },
+    "grok-4.7": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "grok-4.6": {
+      "context_k": 1024,
+      "reasoning": true
+    },
+    "gemini-3.8-flash": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 64
+    },
+    "gemini-3.1-pro": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 64
+    },
+    "gemini-4-argon": {
+      "context_k": 1024,
+      "reasoning": true,
+      "max_output": 64
+    }
+  }
+}
